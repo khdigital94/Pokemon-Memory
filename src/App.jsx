@@ -9,14 +9,16 @@
 import { useState, useEffect } from "react";
 import "./App.css";
 import Card from "./components/card";
+import Scores from "./components/scores";
 
 function App() {
 	const [pokemon, setPokemon] = useState([]);
-	const [selectedCards, setSelectedCards] = useState("");
+	const [selectedPokemon, setSelectedPokemon] = useState([]);
 	const [currentScore, setCurrentScore] = useState(0);
-	const [bestScore, setBestScore] = useState(0);
+	const [highScore, setHighScore] = useState(0);
 
-	const names = ["Pikachu", "Bulbasaur", "Charmander", "Squirtle", "Meowth", "Psyduck", "Abra", "Eevee", "Snorlax", "Articuno", "Zapdos", "Moltres", "Dragonite", "Mewtwo", "Mew", "Lapras", "Staryu"];
+	// const names = ["Pikachu", "Bulbasaur", "Charmander", "Squirtle", "Meowth", "Psyduck", "Abra", "Eevee", "Snorlax", "Articuno", "Zapdos", "Moltres", "Dragonite", "Mewtwo", "Mew", "Lapras", "Staryu"];
+	const names = ["Pikachu", "Bulbasaur", "Charmander"];
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -28,6 +30,7 @@ function App() {
 				const cards = data.map((pokemon) => ({
 					name: pokemon.name,
 					sprite: pokemon.sprites.front_default,
+					id: pokemon.id,
 				}));
 
 				setPokemon(cards);
@@ -42,17 +45,42 @@ function App() {
 	const renderCards = () => {
 		if (pokemon || pokemon.length !== 0) {
 			return pokemon.map((card) => {
-				return <Card id={card.id} name={card.name} sprite={card.sprite} />;
+				return <Card id={card.id} name={card.name} sprite={card.sprite} handleClick={handleClick} />;
 			});
+		}
+	};
+
+	const handleClick = (id) => {
+		const isInSelection = selectedPokemon.find((pokemon) => pokemon.id === id);
+		const checkHighscore = () => {
+			if (currentScore > highScore) {
+				setHighScore(currentScore);
+			}
+		};
+
+		if (isInSelection) {
+			checkHighscore();
+			setCurrentScore(0);
+			setSelectedPokemon([]);
+		} else {
+			const selection = pokemon.find((pokemon) => pokemon.id === id);
+			const newArr = selectedPokemon;
+			newArr.push(selection);
+			setSelectedPokemon(newArr);
+			setCurrentScore((currentScore) => currentScore + 1);
 		}
 	};
 
 	return (
 		<>
-			<div id="app" className="p-12 text-center text-white">
+			<div id="app" className="p-12 text-center flex flex-col justify-center items-center text-white">
 				<h1 className="text-3xl font-bold uppercase">Pokémon Memory Game</h1>
 				<p>Get points by clicking on an image but don't click on any more than once!</p>
+				<Scores currentScore={currentScore} highScore={highScore} />
 				<div className="flex flex-wrap justify-center gap-6 mt-12">{renderCards()}</div>
+				<button type="button" onClick={() => console.log(currentScore)}>
+					Klick
+				</button>
 			</div>
 		</>
 	);
