@@ -1,11 +1,3 @@
-// 1. Name + Bild fetchen in useEffect ✅
-// 2. Component für die einzelne Karten erstellen
-// 3. Function zum neurendern der Karten mit zufälliger Position
-// - useState mit nicht ausgewählten Karten
-// - useState mit ausgewählten Karten
-// - useState mit aktuellem Score
-// - useState mit BestScore
-
 import { useState, useEffect } from "react";
 import "./App.css";
 import Card from "./components/card";
@@ -17,8 +9,7 @@ function App() {
 	const [currentScore, setCurrentScore] = useState(0);
 	const [highScore, setHighScore] = useState(0);
 
-	// const names = ["Pikachu", "Bulbasaur", "Charmander", "Squirtle", "Meowth", "Psyduck", "Abra", "Eevee", "Snorlax", "Articuno", "Zapdos", "Moltres", "Dragonite", "Mewtwo", "Mew", "Lapras", "Staryu"];
-	const names = ["Pikachu", "Bulbasaur", "Charmander"];
+	const names = ["Pikachu", "Bulbasaur", "Charmander", "Squirtle", "Meowth", "Psyduck", "Abra", "Eevee", "Snorlax", "Articuno", "Zapdos", "Moltres", "Dragonite", "Mew", "Lapras", "Staryu"];
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -50,6 +41,15 @@ function App() {
 		}
 	};
 
+	const shufflePokemon = () => {
+		const shuffled = [...pokemon];
+		for (let i = shuffled.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+		}
+		setPokemon(shuffled);
+	};
+
 	const handleClick = (id) => {
 		const isInSelection = selectedPokemon.find((pokemon) => pokemon.id === id);
 		const checkHighscore = () => {
@@ -68,6 +68,7 @@ function App() {
 			newArr.push(selection);
 			setSelectedPokemon(newArr);
 			setCurrentScore((currentScore) => currentScore + 1);
+			shufflePokemon();
 		}
 	};
 
@@ -75,12 +76,9 @@ function App() {
 		<>
 			<div id="app" className="p-12 text-center flex flex-col justify-center items-center text-white">
 				<h1 className="text-3xl font-bold uppercase">Pokémon Memory Game</h1>
-				<p>Get points by clicking on an image but don't click on any more than once!</p>
+				<p>Get points by clicking on a Pokémon but don't click on any more than once!</p>
 				<Scores currentScore={currentScore} highScore={highScore} />
 				<div className="flex flex-wrap justify-center gap-6 mt-12">{renderCards()}</div>
-				<button type="button" onClick={() => console.log(currentScore)}>
-					Klick
-				</button>
 			</div>
 		</>
 	);
